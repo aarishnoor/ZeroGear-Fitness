@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08080f;--surface:#0f0f1a;--surface2:#161624;--border:#1f1f35;--border2:#2a2a45;--accent:#00e87a;--accent2:#00b85f;--accent-dim:rgba(0,232,122,0.10);--accent-glow:rgba(0,232,122,0.35);--orange:#ff6b35;--orange-dim:rgba(255,107,53,0.10);--blue:#4f8eff;--blue-dim:rgba(79,142,255,0.10);--purple:#a855f7;--text:#e2e2f0;--muted:#5a5a7a;--muted2:#8888aa;--locked:#16162a;--font-d:'Orbitron',monospace;--font-b:'Syne',sans-serif;--font-m:'DM Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font-b);overflow-x:hidden}
+button{cursor:pointer;font-family:var(--font-b)}
+.screen{display:none;width:100%;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* WELCOME */
+#s-welcome{align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;overflow:hidden}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,232,122,.04)1px,transparent 1px),linear-gradient(90deg,rgba(0,232,122,.04)1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.glow-orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,232,122,.13) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.welcome-inner{position:relative;z-index:1;max-width:480px}
+.logo-badge{display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,232,122,.3);border-radius:100px;padding:6px 16px;margin-bottom:1.5rem}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.logo-txt{font-family:var(--font-m);font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase}
+.w-title{font-family:var(--font-d);font-size:clamp(30px,6vw,50px);font-weight:900;line-height:1.1;letter-spacing:-1px;margin-bottom:1rem}
+.w-title span{color:var(--accent);text-shadow:0 0 20px var(--accent-glow)}
+.w-sub{font-size:15px;color:var(--muted2);line-height:1.65;margin-bottom:2.5rem}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#08080f;font-family:var(--font-d);font-size:12px;font-weight:700;letter-spacing:1px;padding:14px 32px;border:none;border-radius:4px;transition:all .2s;text-transform:uppercase}
+.cta-btn:hover{background:#00ff88;box-shadow:0 0 30px var(--accent-glow);transform:translateY(-2px)}
+.w-stats{display:flex;gap:2rem;justify-content:center;margin-top:2.5rem}
+.ws-v{font-family:var(--font-d);font-size:22px;color:var(--accent);font-weight:700;text-align:center}
+.ws-l{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:1px;text-align:center}
+
+/* ONBOARD */
+#s-onboard{padding:2rem;align-items:center;justify-content:center}
+.ob-wrap{width:100%;max-width:500px}
+.ob-step{display:none}.ob-step.active{display:block}
+.ob-label{font-family:var(--font-m);font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:.75rem}
+.ob-title{font-family:var(--font-d);font-size:clamp(18px,4vw,26px);font-weight:700;margin-bottom:.6rem;line-height:1.2}
+.ob-sub{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:1.5rem}
+.ob-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:1.5rem;margin-bottom:1.25rem}
+.pdots{display:flex;gap:8px;justify-content:center;margin-bottom:2rem}
+.pdot{width:8px;height:8px;border-radius:50%;background:var(--border2);transition:all .3s}
+.pdot.done{background:var(--accent)}
+.pdot.active{background:var(--accent);box-shadow:0 0 8px var(--accent-glow);width:24px;border-radius:4px}
+.cnt-num{font-family:var(--font-d);font-size:72px;font-weight:900;color:var(--accent);line-height:1;text-align:center;text-shadow:0 0 30px var(--accent-glow)}
+.cnt-lbl{font-size:12px;color:var(--muted2);text-align:center;margin-top:6px}
+.cnt-btns{display:flex;gap:12px;justify-content:center;margin-top:1.25rem}
+.c-btn{width:52px;height:52px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:22px;font-family:var(--font-d);font-weight:700;transition:all .15s}
+.c-btn.plus{background:var(--accent-dim);border-color:rgba(0,232,122,.4);color:var(--accent)}
+.c-btn.plus:hover{background:var(--accent);color:#08080f}
+.c-btn:hover{border-color:var(--accent);color:var(--accent)}
+.timer-ring{position:relative;width:130px;height:130px;margin:0 auto}
+.timer-ring svg{transform:rotate(-90deg)}
+.trb{fill:none;stroke:var(--border2);stroke-width:4}
+.trp{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round;stroke-dasharray:376;stroke-dashoffset:376;transition:stroke-dashoffset 1s linear}
+.tr-time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tr-sec{font-family:var(--font-d);font-size:30px;font-weight:900;color:var(--accent)}
+.tr-unit{font-size:10px;color:var(--muted);letter-spacing:1px}
+.ts-btn{display:block;width:100%;margin-top:1rem;padding:11px;background:var(--accent);border:none;border-radius:6px;color:#08080f;font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s}
+.ts-btn:hover{background:#00ff88}
+.ts-btn:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed}
+.next-btn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:6px;color:#08080f;font-family:var(--font-d);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s}
+.next-btn:hover{background:#00ff88;box-shadow:0 0 20px var(--accent-glow)}
+
+/* PLACEMENT */
+#s-placement{padding:2rem;align-items:center;justify-content:center;text-align:center}
+.pl-inner{max-width:460px}
+.pl-icon{font-size:56px;margin-bottom:.75rem;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes popIn{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.pl-title{font-family:var(--font-d);font-size:clamp(20px,4vw,30px);font-weight:900;color:var(--accent);margin-bottom:.4rem}
+.pl-sub{font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:1.5rem}
+.pl-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;text-align:left}
+.plc{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:.9rem 1.1rem}
+.plc-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.plc-val{font-family:var(--font-d);font-size:18px;font-weight:700;color:var(--accent)}
+.plc-sub{font-size:11px;color:var(--muted2);margin-top:2px}
+.goal-banner{background:linear-gradient(135deg,rgba(0,232,122,.08),rgba(79,142,255,.08));border:1px solid rgba(0,232,122,.22);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.5rem;text-align:left}
+.goal-lbl{font-family:var(--font-m);font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.goal-txt{font-size:14px;font-weight:600;line-height:1.5}
+.goal-days{font-size:11px;color:var(--muted2);margin-top:3px}
+
+/* MAIN APP */
+#s-app{padding:0;min-height:100vh}
+.app-hdr{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100}
+.app-logo{font-family:var(--font-d);font-size:13px;font-weight:900;color:var(--accent);letter-spacing:1px}
+.app-xp{display:flex;align-items:center;gap:7px;background:var(--accent-dim);border:1px solid rgba(0,232,122,.2);border-radius:100px;padding:4px 12px}
+.xp-val{font-family:var(--font-m);font-size:12px;color:var(--accent)}
+.app-body{flex:1;overflow-y:auto;padding:1.1rem 1.1rem 80px}
+.app-nav{display:flex;gap:1px;padding:.6rem .75rem;border-top:1px solid var(--border);background:var(--surface);position:fixed;bottom:0;left:0;right:0;z-index:100;max-width:100%}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border:none;background:transparent;color:var(--muted);font-size:9px;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;border-radius:6px;line-height:1}
+.nb svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5}
+.nb.active{color:var(--accent)}
+.tab{display:none}.tab.active{display:block}
+
+/* SECTION HEADERS */
+.sec-hdr{margin-bottom:1.1rem}
+.sec-title{font-family:var(--font-d);font-size:16px;font-weight:700;margin-bottom:3px}
+.sec-sub{font-size:12px;color:var(--muted2)}
+
+/* SKILL TREE */
+.tree-tabs{display:flex;gap:7px;margin-bottom:1rem;overflow-x:auto;padding-bottom:3px}
+.tt{padding:6px 15px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-size:12px;white-space:nowrap;transition:all .2s}
+.tt.active{background:var(--accent-dim);border-color:rgba(0,232,122,.4);color:var(--accent)}
+.skill-svg{width:100%;overflow:visible}
+.node-g{cursor:pointer}
+.node-g:hover circle{filter:brightness(1.25)}
+.skill-detail{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:1.1rem 1.25rem;margin-top:.9rem;display:none}
+.skill-detail.show{display:block;animation:slideUp .2s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.sd-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem}
+.sd-name{font-family:var(--font-d);font-size:14px;font-weight:700}
+.sdg{display:inline-flex;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.sdg.m{background:rgba(0,232,122,.12);color:var(--accent);border:1px solid rgba(0,232,122,.3)}
+.sdg.u{background:rgba(79,142,255,.12);color:var(--blue);border:1px solid rgba(79,142,255,.3)}
+.sdg.l{background:var(--locked);color:var(--muted);border:1px solid var(--border)}
+.sd-body{font-size:12px;color:var(--muted2);line-height:1.6;margin-bottom:.75rem}
+.sd-tips{background:var(--surface2);border-radius:8px;padding:.9rem;margin-bottom:.75rem}
+.sdt-ttl{font-size:9px;color:var(--orange);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px;font-family:var(--font-m)}
+.sdt-row{font-size:11px;color:var(--muted2);padding:3px 0;border-bottom:1px solid var(--border);line-height:1.5}
+.sdt-row:last-child{border:none}
+.sdt-row::before{content:"⚠ ";color:var(--orange)}
+.mstr-btn{width:100%;padding:10px;background:var(--accent);border:none;border-radius:6px;color:#08080f;font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.mstr-btn:hover{background:#00ff88;box-shadow:0 0 15px var(--accent-glow)}
+.mstr-btn:disabled{background:var(--locked);color:var(--muted);cursor:not-allowed}
+
+/* WORKOUT */
+.filter-bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:1rem}
+.fchip{display:flex;align-items:center;gap:5px;padding:6px 13px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-size:12px;transition:all .2s}
+.fchip svg{width:12px;height:12px;flex-shrink:0}
+.fchip.on{border-color:rgba(0,232,122,.4);background:var(--accent-dim);color:var(--accent)}
+.gen-btn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:8px;color:#08080f;font-family:var(--font-d);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.gen-btn:hover{box-shadow:0 0 22px var(--accent-glow);background:#00ff88}
+.gen-btn:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed}
+.wl{text-align:center;padding:2rem;display:none}
+.wl-sp{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wr{display:none}
+.wr-title{font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--accent);margin-bottom:3px}
+.wr-meta{font-size:11px;color:var(--muted2);font-family:var(--font-m);margin-bottom:1rem}
+.ex-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:8px;display:flex;gap:12px;cursor:pointer;transition:border-color .2s}
+.ex-row:hover{border-color:var(--border2)}
+.ex-row.done-ex{opacity:.4;border-color:transparent}
+.ex-idx{font-family:var(--font-d);font-size:18px;font-weight:900;color:var(--border2);width:26px;flex-shrink:0;line-height:1}
+.ex-row.done-ex .ex-idx{color:var(--accent)}
+.ex-n{font-size:13px;font-weight:600;margin-bottom:2px}
+.ex-d{font-size:11px;color:var(--muted2);font-family:var(--font-m)}
+.ex-tag{display:inline-block;padding:2px 7px;border-radius:100px;background:var(--accent-dim);color:var(--accent);font-size:9px;margin-top:4px;font-family:var(--font-m)}
+.ex-qtag{display:inline-block;padding:2px 7px;border-radius:100px;background:var(--orange-dim);color:var(--orange);font-size:9px;margin-left:3px;font-family:var(--font-m)}
+.ex-tick{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .2s}
+.ex-row:hover .ex-tick{border-color:var(--accent)}
+.ex-row.done-ex .ex-tick{background:var(--accent);border-color:var(--accent)}
+.ex-tip-row{display:none;padding:8px 0 2px;border-top:1px solid var(--border);margin-top:8px;font-size:11px;color:var(--muted2);line-height:1.6}
+.ex-row.open .ex-tip-row{display:block}
+.mark-btn{padding:4px 11px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-size:10px;cursor:pointer;margin-top:7px}
+.mark-btn:hover{border-color:var(--accent);color:var(--accent)}
+.err-box{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--orange);display:none;margin-bottom:.9rem}
+.s-timer{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:.9rem 1.1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.st-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:var(--font-m)}
+.st-t{font-family:var(--font-d);font-size:20px;color:var(--text)}
+.st-btns{display:flex;gap:5px}
+.stb{padding:5px 11px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-size:11px;transition:all .2s}
+.stb.go{background:var(--accent);color:#08080f;border-color:var(--accent)}
+.stb:hover{opacity:.8}
+
+/* ====== FORM CHECK LIBRARY ====== */
+.form-search{width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font-b);font-size:13px;margin-bottom:1rem;outline:none;transition:border-color .2s}
+.form-search:focus{border-color:rgba(0,232,122,.4)}
+.form-search::placeholder{color:var(--muted)}
+.form-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.form-cat{padding:5px 13px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-size:11px;transition:all .2s}
+.form-cat.active{background:var(--accent-dim);border-color:rgba(0,232,122,.4);color:var(--accent)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.form-card:hover{border-color:var(--border2)}
+.form-card.expanded{grid-column:1/-1;border-color:rgba(0,232,122,.3)}
+.fc-anim{background:var(--surface2);height:110px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.fc-body{padding:.75rem}
+.fc-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.fc-cat{font-size:10px;color:var(--muted2);font-family:var(--font-m)}
+.fc-expand{display:none;padding:.9rem;border-top:1px solid var(--border);background:var(--surface2)}
+.form-card.expanded .fc-expand{display:block}
+.fce-section{margin-bottom:.9rem}
+.fce-title{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;font-family:var(--font-m);margin-bottom:5px}
+.fce-title.green{color:var(--accent)}
+.fce-title.orange{color:var(--orange)}
+.fce-title.blue{color:var(--blue)}
+.fce-row{font-size:11px;color:var(--muted2);padding:3px 0;line-height:1.5}
+.phase-label{font-size:9px;font-family:var(--font-m);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-top:4px}
+
+/* SVG stick figure animations */
+.phase-a{animation:fadeAB 2.4s ease-in-out infinite}
+.phase-b{animation:fadeBA 2.4s ease-in-out infinite}
+@keyframes fadeAB{0%,40%{opacity:1}55%,90%{opacity:0}100%{opacity:1}}
+@keyframes fadeBA{0%,40%{opacity:0}55%,90%{opacity:1}100%{opacity:0}}
+.phase-slow-a{animation:fadeAB 3.2s ease-in-out infinite}
+.phase-slow-b{animation:fadeBA 3.2s ease-in-out infinite}
+.highlight-good{stroke:var(--accent)!important;stroke-width:3!important}
+.highlight-bad{stroke:var(--orange)!important;stroke-width:2.5!important}
+.mistake-zone{fill:rgba(255,107,53,.18)!important;stroke:var(--orange)!important;stroke-width:1!important}
+
+/* ====== HISTORY TAB ====== */
+.hist-empty{text-align:center;padding:3rem 1rem}
+.hist-empty-icon{font-size:48px;margin-bottom:1rem;opacity:.4}
+.hist-empty-txt{font-size:14px;color:var(--muted2)}
+.hist-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.1rem}
+.hstat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem;text-align:center}
+.hstat-v{font-family:var(--font-d);font-size:20px;font-weight:700}
+.hstat-l{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.hist-list{display:flex;flex-direction:column;gap:9px}
+.hist-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .2s}
+.hist-card:hover{border-color:var(--border2)}
+.hist-card.open{border-color:rgba(0,232,122,.25)}
+.hc-top{display:flex;align-items:flex-start;justify-content:space-between}
+.hc-title{font-size:13px;font-weight:600;margin-bottom:3px}
+.hc-meta{font-size:11px;color:var(--muted2);font-family:var(--font-m)}
+.hc-xp{font-family:var(--font-d);font-size:13px;color:var(--accent);font-weight:700}
+.hc-detail{display:none;margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
+.hist-card.open .hc-detail{display:block}
+.hc-ex-row{font-size:11px;color:var(--muted2);padding:3px 0;font-family:var(--font-m)}
+.hc-ex-row::before{content:"› ";color:var(--accent)}
+.hc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:.6rem}
+.hc-tag{padding:2px 8px;border-radius:100px;font-size:9px;font-family:var(--font-m)}
+.hc-tag.yoga{background:rgba(0,232,122,.1);color:var(--accent);border:1px solid rgba(0,232,122,.2)}
+.hc-tag.quiet{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(255,107,53,.2)}
+.hc-tag.lvl{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(79,142,255,.2)}
+.clear-hist{padding:8px 16px;border-radius:100px;border:1px solid rgba(255,107,53,.3);background:transparent;color:var(--orange);font-size:11px;float:right;margin-bottom:1rem;transition:all .2s}
+.clear-hist:hover{background:var(--orange-dim)}
+.storage-badge{display:inline-flex;align-items:center;gap:5px;background:var(--blue-dim);border:1px solid rgba(79,142,255,.25);border-radius:100px;padding:3px 10px;font-size:10px;color:var(--blue);font-family:var(--font-m);margin-bottom:1rem}
+.storage-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* PROFILE */
+.ps-ttl{font-family:var(--font-d);font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.7rem}
+.xp-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;margin-bottom:1rem}
+.xp-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.xp-lvl{font-family:var(--font-d);font-size:22px;font-weight:900;color:var(--accent)}
+.xp-pts{font-family:var(--font-m);font-size:11px;color:var(--muted2)}
+.xp-track{height:5px;background:var(--border2);border-radius:100px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));border-radius:100px;transition:width 1s ease}
+.xp-nxt{font-size:10px;color:var(--muted);margin-top:5px;font-family:var(--font-m)}
+.streak-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem;text-align:center}
+.sc-v{font-family:var(--font-d);font-size:26px;font-weight:900;margin-bottom:3px}
+.sc-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.tog-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.tr-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.tr-sub{font-size:11px;color:var(--muted2)}
+.tog{width:42px;height:22px;border-radius:100px;border:none;position:relative;flex-shrink:0;transition:background .25s}
+.tog.off{background:var(--border2)}.tog.on{background:var(--accent)}
+.tog::after{content:'';position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .25s}
+.tog.off::after{left:3px}.tog.on::after{left:23px}
+.gtg-test-btn{width:100%;padding:11px;background:var(--orange-dim);border:1px solid rgba(255,107,53,.3);border-radius:8px;color:var(--orange);font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s;margin-top:.5rem}
+.gtg-test-btn:hover{background:rgba(255,107,53,.2)}
+
+/* CELEBRATE */
+.cel-overlay{position:fixed;inset:0;background:rgba(8,8,15,.93);z-index:1000;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:2rem}
+.cel-overlay.show{display:flex}
+.cel-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.particle{position:absolute;width:5px;height:5px;border-radius:50%;animation:burst 1.6s ease-out forwards}
+@keyframes burst{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
+.cel-icon{font-size:64px;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275)}
+.cel-title{font-family:var(--font-d);font-size:clamp(20px,5vw,28px);font-weight:900;color:var(--accent);margin:.75rem 0 .4rem;text-shadow:0 0 30px var(--accent-glow)}
+.cel-sub{font-size:14px;color:var(--muted2);line-height:1.6;margin-bottom:1.5rem;max-width:360px}
+.cel-close{padding:11px 28px;background:var(--accent);border:none;border-radius:6px;color:#08080f;font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="screen active" id="s-welcome">
+  <div class="grid-bg"></div><div class="glow-orb"></div>
+  <div class="welcome-inner">
+    <div class="logo-badge"><div class="logo-dot"></div><span class="logo-txt">ZeroGear Fitness v2</span></div>
+    <h1 class="w-title">Your body is the<br><span>only gym</span> you need.</h1>
+    <p class="w-sub">RPG-style skill progression. AI workouts. Form check library. No equipment. No excuses.</p>
+    <button class="cta-btn" onclick="go('s-onboard')">Begin Assessment <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    <div class="w-stats">
+      <div><div class="ws-v">3</div><div class="ws-l">Skill Trees</div></div>
+      <div><div class="ws-v">24</div><div class="ws-l">Exercises</div></div>
+      <div><div class="ws-v">10</div><div class="ws-l">Form Guides</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARD -->
+<div class="screen" id="s-onboard">
+  <div class="ob-wrap">
+    <div class="pdots"><div class="pdot active" id="pd0"></div><div class="pdot" id="pd1"></div><div class="pdot" id="pd2"></div></div>
+    <div class="ob-step active" id="obs0">
+      <div class="ob-label">Baseline Test · 01 / 02</div>
+      <h2 class="ob-title">How many push-ups with perfect form?</h2>
+      <p class="ob-sub">Do as many as you can right now. Full range only — chest near floor, arms fully extended at top.</p>
+      <div class="ob-card">
+        <div class="cnt-num" id="pu-cnt">0</div>
+        <div class="cnt-lbl">push-ups</div>
+        <div class="cnt-btns"><button class="c-btn" onclick="adjCnt(-1)">−</button><button class="c-btn plus" onclick="adjCnt(1)">+</button></div>
+      </div>
+      <button class="next-btn" onclick="nextOb()">Next →</button>
+    </div>
+    <div class="ob-step" id="obs1">
+      <div class="ob-label">Baseline Test · 02 / 02</div>
+      <h2 class="ob-title">Hold a wall-sit as long as you can.</h2>
+      <p class="ob-sub">Back flat, thighs parallel, 90° angle. Start when ready, stop the timer when you drop.</p>
+      <div class="ob-card">
+        <div class="timer-ring">
+          <svg viewBox="0 0 120 120" width="130" height="130"><circle class="trb" cx="60" cy="60" r="54"/><circle class="trp" id="trp" cx="60" cy="60" r="54"/></svg>
+          <div class="tr-time"><div class="tr-sec" id="ws-t">0</div><div class="tr-unit">seconds</div></div>
+        </div>
+        <button class="ts-btn" id="ws-btn" onclick="toggleWS()">Start Timer</button>
+      </div>
+      <button class="next-btn" id="ws-next" onclick="calcPlacement()" style="display:none">See Results →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLACEMENT -->
+<div class="screen" id="s-placement">
+  <div class="pl-inner">
+    <div class="pl-icon" id="pl-ico">⚡</div>
+    <div class="pl-title" id="pl-ttl">Warrior Initiate</div>
+    <p class="pl-sub" id="pl-sub">Your skill trees have been calibrated.</p>
+    <div class="pl-cards">
+      <div class="plc"><div class="plc-lbl">Push-ups</div><div class="plc-val" id="pl-pv">0</div><div class="plc-sub">reps</div></div>
+      <div class="plc"><div class="plc-lbl">Wall-sit</div><div class="plc-val" id="pl-wv">0</div><div class="plc-sub">seconds</div></div>
+    </div>
+    <div class="goal-banner">
+      <div class="goal-lbl">30-Day Mission</div>
+      <div class="goal-txt" id="pl-goal">—</div>
+      <div class="goal-days">Day 1 of 30</div>
+    </div>
+    <button class="next-btn" onclick="enterApp()">Enter ZeroGear →</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="screen" id="s-app">
+  <div class="app-hdr">
+    <div class="app-logo">ZEROGEAR</div>
+    <div class="app-xp">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--accent)"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+      <span class="xp-val" id="hdr-xp">0 XP</span>
+    </div>
+  </div>
+  <div class="app-body">
+
+    <!-- TREE TAB -->
+    <div class="tab active" id="tab-tree">
+      <div class="sec-hdr"><div class="sec-title">Skill Trees</div><div class="sec-sub">Tap a node · Mark mastered to unlock next tier</div></div>
+      <div class="tree-tabs">
+        <button class="tt active" onclick="showTree('push',this)">Push</button>
+        <button class="tt" onclick="showTree('squat',this)">Squat</button>
+        <button class="tt" onclick="showTree('core',this)">Core</button>
+      </div>
+      <div id="tree-push"></div><div id="tree-squat" style="display:none"></div><div id="tree-core" style="display:none"></div>
+      <div class="skill-detail" id="skill-detail"></div>
+    </div>
+
+    <!-- WORKOUT TAB -->
+    <div class="tab" id="tab-workout">
+      <div class="sec-hdr"><div class="sec-title">Today's Workout</div><div class="sec-sub">AI-generated for your level & filters</div></div>
+      <div class="filter-bar">
+        <button class="fchip" id="fc-yoga" onclick="toggleF('yoga')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="20" width="20" height="2" rx="1"/><path d="M4 20c0-4 3-6 8-6s8 2 8 6"/><circle cx="12" cy="8" r="4"/></svg>Yoga Mat</button>
+        <button class="fchip" id="fc-quiet" onclick="toggleF('quiet')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>Quiet Mode</button>
+      </div>
+      <div class="s-timer">
+        <div><div class="st-lbl">Session</div><div class="st-t" id="w-timer">00:00</div></div>
+        <div class="st-btns">
+          <button class="stb go" id="wt-btn" onclick="toggleWT()">Start</button>
+          <button class="stb" onclick="resetWT()">Reset</button>
+        </div>
+      </div>
+      <button class="gen-btn" id="gen-btn" onclick="generateWorkout()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Generate Workout
+      </button>
+      <div class="err-box" id="w-err"></div>
+      <div class="wl" id="w-load"><div class="wl-sp"></div><p style="font-size:12px;color:var(--muted2)">Building your session...</p></div>
+      <div class="wr" id="w-result"></div>
+    </div>
+
+    <!-- FORM CHECK TAB -->
+    <div class="tab" id="tab-form">
+      <div class="sec-hdr"><div class="sec-title">Form Library</div><div class="sec-sub">Animated biomechanics · Tap any card to expand</div></div>
+      <input class="form-search" id="form-search" placeholder="Search exercises..." oninput="filterFormLib()">
+      <div class="form-cats" id="form-cats">
+        <button class="form-cat active" data-cat="all" onclick="setCat(this)">All</button>
+        <button class="form-cat" data-cat="push" onclick="setCat(this)">Push</button>
+        <button class="form-cat" data-cat="squat" onclick="setCat(this)">Squat</button>
+        <button class="form-cat" data-cat="core" onclick="setCat(this)">Core</button>
+        <button class="form-cat" data-cat="isometric" onclick="setCat(this)">Isometric</button>
+      </div>
+      <div class="form-grid" id="form-grid"></div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div class="tab" id="tab-history">
+      <div class="sec-hdr"><div class="sec-title">Workout History</div><div class="sec-sub">Every session logged & stored</div></div>
+      <div class="storage-badge"><div class="storage-dot"></div>Persistent storage active</div>
+      <div id="hist-content"></div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="tab" id="tab-profile">
+      <div class="sec-hdr"><div class="sec-title">My Progress</div></div>
+      <div style="margin-bottom:1rem"><div class="ps-ttl">XP & Level</div>
+        <div class="xp-wrap">
+          <div class="xp-top"><div class="xp-lvl">Lvl <span id="p-lvl">1</span></div><div class="xp-pts"><span id="p-xp">0</span> XP</div></div>
+          <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+          <div class="xp-nxt" id="xp-nxt">0 / 100 XP to next level</div>
+        </div>
+      </div>
+      <div style="margin-bottom:1rem"><div class="ps-ttl">Stats</div>
+        <div class="streak-row">
+          <div class="sc"><div class="sc-v" style="color:var(--orange)" id="p-streak">0🔥</div><div class="sc-l">Day Streak</div></div>
+          <div class="sc"><div class="sc-v" style="color:var(--blue)" id="p-mastered">0</div><div class="sc-l">Mastered</div></div>
+        </div>
+      </div>
+      <div style="margin-bottom:1rem"><div class="ps-ttl">Settings</div>
+        <div class="tog-row"><div><div class="tr-name">Yoga Mat Mode</div><div class="tr-sub">Mat-only exercises</div></div><button class="tog off" id="t-yoga" onclick="toggleF('yoga')"></button></div>
+        <div class="tog-row"><div><div class="tr-name">Quiet Mode</div><div class="tr-sub">No explosive moves</div></div><button class="tog off" id="t-quiet" onclick="toggleF('quiet')"></button></div>
+        <div class="tog-row"><div><div class="tr-name">Grease the Groove</div><div class="tr-sub">Random daily reminders</div></div><button class="tog off" id="t-gtg" onclick="toggleGTG()"></button></div>
+        <button class="gtg-test-btn hidden" id="gtg-test" onclick="fireGTG()">🔔 Test Reminder Now</button>
+      </div>
+      <div><div class="ps-ttl">30-Day Mission</div>
+        <div class="goal-banner"><div class="goal-lbl">Active Goal</div><div class="goal-txt" id="p-goal">—</div><div class="goal-days" id="p-days">Day 1 of 30</div></div>
+      </div>
+    </div>
+
+  </div><!-- end app-body -->
+
+  <nav class="app-nav">
+    <button class="nb active" id="nb-tree" onclick="switchTab('tree')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><line x1="12" y1="7" x2="5" y2="17"/><line x1="12" y1="7" x2="19" y2="17"/></svg>Tree
+    </button>
+    <button class="nb" id="nb-workout" onclick="switchTab('workout')">
+      <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Workout
+    </button>
+    <button class="nb" id="nb-form" onclick="switchTab('form')">
+      <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Form
+    </button>
+    <button class="nb" id="nb-history" onclick="switchTab('history')">
+      <svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"/></svg>History
+    </button>
+    <button class="nb" id="nb-profile" onclick="switchTab('profile')">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
+    </button>
+  </nav>
+</div>
+
+<!-- CELEBRATE -->
+<div class="cel-overlay" id="cel">
+  <div class="cel-particles" id="cel-pts"></div>
+  <div class="cel-icon" id="cel-ico">⚡</div>
+  <div class="cel-title" id="cel-ttl">SKILL MASTERED!</div>
+  <div class="cel-sub" id="cel-sub">You've unlocked the next tier.</div>
+  <button class="cel-close" onclick="closeCel()">Continue →</button>
+</div>
+
+<script>
+// =================== STATE ===================
+const S={pushUps:0,wallSitSec:0,level:'beginner',xp:0,streak:1,goal:'',yogaMode:false,quietMode:false,gtg:false,masteredSkills:[],wsRunning:false,wsInt:null,wTimerSec:0,wTimerInt:null,wTimerRunning:false,currentTree:'push',doneEx:[],activeWorkout:null};
+
+// =================== TREES ===================
+const TREES={
+  push:[
+    {id:'wall-pu',name:'Wall Push-up',x:160,y:50,status:'unlocked',desc:'Stand arm\'s length from wall. Press hands into wall, elbows at 45°, lower chest toward wall.',mistakes:['Hips drifting backward','Bending at the waist','Head jutting forward'],prereqs:[],target:'Chest, Shoulders, Triceps'},
+    {id:'knee-pu',name:'Knee Push-up',x:160,y:150,status:'locked',desc:'Knees on floor as pivot. Lower chest toward ground, keep back flat, full range of motion.',mistakes:['Hips too high, breaking form','Partial range of motion'],prereqs:['wall-pu'],target:'Chest, Triceps'},
+    {id:'incline-pu',name:'Incline Push-up',x:80,y:255,status:'locked',desc:'Hands on elevated surface. Body forms a plank. Develops lower chest strength.',mistakes:['Sagging hips','Not reaching full arm extension'],prereqs:['knee-pu'],target:'Lower Chest, Triceps'},
+    {id:'std-pu',name:'Standard Push-up',x:240,y:255,status:'locked',desc:'Hands shoulder-width on floor. Full plank position from head to heels.',mistakes:['Elbows flaring past 45°','Looking up instead of down','Incomplete range of motion'],prereqs:['incline-pu'],target:'Chest, Shoulders, Triceps'},
+    {id:'wide-pu',name:'Wide Push-up',x:80,y:365,status:'locked',desc:'Hands placed wider than shoulder-width. Emphasizes outer chest activation.',mistakes:['Over-widening causing shoulder impingement'],prereqs:['std-pu'],target:'Outer Chest'},
+    {id:'diamond-pu',name:'Diamond Push-up',x:240,y:365,status:'locked',desc:'Hands form a diamond shape under chest. Intense tricep and inner chest work.',mistakes:['Wrists collapsing inward','Elbows drifting outward'],prereqs:['std-pu'],target:'Triceps, Inner Chest'},
+    {id:'archer-pu',name:'Archer Push-up',x:160,y:475,status:'locked',desc:'One arm extends wide as you lower to one side. Builds unilateral pushing strength.',mistakes:['Rotating the torso','Not keeping extended arm straight'],prereqs:['wide-pu','diamond-pu'],target:'Unilateral Chest & Triceps'}
+  ],
+  squat:[
+    {id:'box-sq',name:'Box Squat',x:160,y:50,status:'unlocked',desc:'Sit back onto a chair or box, stand up explosively. Teaches the squat pattern safely.',mistakes:['Knees caving inward','Leaning torso too far forward'],prereqs:[],target:'Quads, Glutes, Hamstrings'},
+    {id:'air-sq',name:'Air Squat',x:160,y:150,status:'locked',desc:'Feet shoulder-width, toes angled out. Hips below knees at depth.',mistakes:['Heels rising off floor','Chest collapsing forward'],prereqs:['box-sq'],target:'Quads, Glutes, Hamstrings'},
+    {id:'pause-sq',name:'Pause Squat',x:80,y:260,status:'locked',desc:'Hold at bottom of squat for 3 seconds before rising. Builds stability and strength.',mistakes:['Relaxing tension at bottom','Bouncing out of the hole'],prereqs:['air-sq'],target:'Quads, Core, Stability'},
+    {id:'jump-sq',name:'Jump Squat',x:240,y:260,status:'locked',desc:'Explode upward from squat, land softly by absorbing impact through ankles then knees.',mistakes:['Landing stiff-legged','Not absorbing impact through full leg'],prereqs:['air-sq'],target:'Full Legs, Power'},
+    {id:'bulgarian',name:'Bulgarian Split',x:80,y:370,status:'locked',desc:'Rear foot elevated on surface, front foot forward. Deep single-leg lunge.',mistakes:['Front knee collapsing inward','Torso leaning excessively forward'],prereqs:['pause-sq'],target:'Quads, Glutes, Balance'},
+    {id:'pistol-sq',name:'Pistol Squat',x:240,y:370,status:'locked',desc:'Single-leg squat to full depth with opposite leg extended. Elite bodyweight skill.',mistakes:['Knee caving medially','Losing balance backward','Partial depth'],prereqs:['jump-sq','bulgarian'],target:'Full Leg Unilateral Strength'}
+  ],
+  core:[
+    {id:'dead-bug',name:'Dead Bug',x:160,y:50,status:'unlocked',desc:'On back, arms vertical, knees 90°. Alternate extending opposite arm and leg slowly.',mistakes:['Lower back arching off floor','Moving too fast','Holding breath'],prereqs:[],target:'Deep Core Stabilizers'},
+    {id:'plank',name:'Plank',x:160,y:155,status:'locked',desc:'Forearms on floor, body in straight line from head to heels. Hold position.',mistakes:['Hips sagging or piked too high','Looking up and straining neck'],prereqs:['dead-bug'],target:'Core, Shoulders, Glutes'},
+    {id:'side-plank',name:'Side Plank',x:80,y:265,status:'locked',desc:'Stack feet, rest on forearm. Keep hips elevated in a straight line.',mistakes:['Hips dropping','Shoulder rotating forward'],prereqs:['plank'],target:'Obliques, Core, Glutes'},
+    {id:'hollow-hold',name:'Hollow Hold',x:240,y:265,status:'locked',desc:'Lower back pressed to floor, arms overhead, legs raised. Hold banana shape.',mistakes:['Lower back arching off floor','Legs too high reducing difficulty'],prereqs:['plank'],target:'Entire Core, Hip Flexors'},
+    {id:'l-sit',name:'L-Sit (Floor)',x:80,y:385,status:'locked',desc:'Seated with hands by hips, press down hard through straight arms to lift hips.',mistakes:['Incomplete elbow lockout','Not depressing shoulders','Bending knees'],prereqs:['side-plank','hollow-hold'],target:'Core, Triceps, Hip Flexors'},
+    {id:'dragon-flag',name:'Dragon Flag',x:240,y:385,status:'locked',desc:'Lie down, grip support overhead. Full body stays rigid and lifts/lowers from shoulders.',mistakes:['Bending at hips (piking)','Not controlling the descent'],prereqs:['hollow-hold'],target:'Full Core, Advanced Stability'}
+  ]
+};
+
+// =================== FORM CHECK DATA ===================
+const FORM_LIBRARY=[
+  {id:'fc-pushup',name:'Standard Push-up',cat:'push',
+   svg:()=>`<svg viewBox="0 0 200 120" width="100%">
+    <g class="phase-a">
+      <line x1="40" y1="70" x2="160" y2="70" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="170" cy="70" r="9" fill="none" stroke="#4f8eff" stroke-width="2"/>
+      <line x1="70" y1="70" x2="70" y2="95" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="130" y1="70" x2="130" y2="95" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="40" y1="70" x2="40" y2="85" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="40" y1="85" x2="28" y2="85" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="100" y="112" text-anchor="middle" fill="#4f8eff" font-size="9" font-family="DM Mono,monospace">TOP — arms extended</text>
+    </g>
+    <g class="phase-b">
+      <line x1="40" y1="70" x2="160" y2="70" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="170" cy="70" r="9" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="70" y1="70" x2="75" y2="90" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="130" y1="70" x2="125" y2="90" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="40" y1="70" x2="32" y2="82" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="32" y1="82" x2="22" y2="78" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="100" y="112" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">BOTTOM — chest near floor</text>
+    </g>
+   </svg>`,
+   phases:['Arms fully extended, body rigid plank from head to heels','Lower until chest nearly touches floor, elbows at 45°, then press up'],
+   mistakes:['Elbows flaring past 45° — strains shoulder joint','Hips sagging or piking — breaks the plank line','Head jutting forward — neutral spine breaks'],
+   cues:['Squeeze glutes and core throughout entire rep','Think "push the floor away" rather than "push yourself up"','Breathe in on the way down, out on the way up']
+  },
+  {id:'fc-squat',name:'Air Squat',cat:'squat',
+   svg:()=>`<svg viewBox="0 0 200 120" width="100%">
+    <g class="phase-a">
+      <circle cx="100" cy="20" r="10" fill="none" stroke="#4f8eff" stroke-width="2"/>
+      <line x1="100" y1="30" x2="100" y2="65" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="100" y1="45" x2="78" y2="60" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="100" y1="45" x2="122" y2="60" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="100" y1="65" x2="88" y2="95" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="100" y1="65" x2="112" y2="95" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="88" y1="95" x2="82" y2="110" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="112" y1="95" x2="118" y2="110" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="100" y="120" text-anchor="middle" fill="#4f8eff" font-size="9" font-family="DM Mono,monospace">STANDING — tall spine</text>
+    </g>
+    <g class="phase-b">
+      <circle cx="100" cy="32" r="10" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="100" y1="42" x2="98" y2="62" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="100" y1="50" x2="72" y2="48" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="100" y1="50" x2="128" y2="48" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="72" y1="48" x2="60" y2="60" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="128" y1="48" x2="140" y2="60" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="98" y1="62" x2="78" y2="88" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="98" y1="62" x2="118" y2="88" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="78" y1="88" x2="68" y2="110" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="118" y1="88" x2="128" y2="110" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="100" y="120" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">BOTTOM — hips below knees</text>
+    </g>
+   </svg>`,
+   phases:['Stand tall, feet shoulder-width, toes 15-30° out, weight through whole foot','Hinge hips back and down, knees track toes, hips below knees at depth'],
+   mistakes:['Heels lifting — indicates ankle mobility issue','Knees caving inward — push knees out over pinky toe','Chest collapsing — arms out front helps counterbalance'],
+   cues:['Sit between your heels, not onto them','Knees should track over the line of your 2nd toe','Drive through the entire foot to stand up']
+  },
+  {id:'fc-plank',name:'Plank',cat:'isometric',
+   svg:()=>`<svg viewBox="0 0 200 100" width="100%">
+    <g class="phase-slow-a">
+      <line x1="30" y1="65" x2="165" y2="65" stroke="#00e87a" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="175" cy="63" r="9" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="70" y1="65" x2="52" y2="78" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="120" y1="65" x2="120" y2="80" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="30" y1="65" x2="30" y2="78" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="52" y1="78" x2="30" y2="78" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="30" y1="78" x2="18" y2="78" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <text x="100" y="96" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">CORRECT — perfect plank line</text>
+    </g>
+    <g class="phase-slow-b">
+      <path d="M30 75 Q95 45 165 65" stroke="#ff6b35" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="175" cy="63" r="9" fill="none" stroke="#ff6b35" stroke-width="2"/>
+      <line x1="70" y1="59" x2="52" y2="78" stroke="#ff6b35" stroke-width="3" stroke-linecap="round"/>
+      <line x1="120" y1="65" x2="120" y2="80" stroke="#ff6b35" stroke-width="3" stroke-linecap="round"/>
+      <line x1="30" y1="75" x2="30" y2="78" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="52" y1="78" x2="30" y2="78" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="95" cy="50" rx="20" ry="10" fill="rgba(255,107,53,.15)" stroke="#ff6b35" stroke-width="1"/>
+      <text x="100" y="96" text-anchor="middle" fill="#ff6b35" font-size="9" font-family="DM Mono,monospace">MISTAKE — hips piked too high</text>
+    </g>
+   </svg>`,
+   phases:['Forearms flat, elbows under shoulders, body perfectly straight','Avoid piking (hips too high) or sagging (hips too low)'],
+   mistakes:['Hips piking up — reduces core demand, signals weak core','Hips sagging — compresses lumbar spine','Head drooping — keep neutral neck, look at floor'],
+   cues:['Squeeze glutes, quads, and abs simultaneously','Imagine trying to pull elbows toward toes — engages core harder','Breathe steadily — do not hold breath']
+  },
+  {id:'fc-deadbug',name:'Dead Bug',cat:'core',
+   svg:()=>`<svg viewBox="0 0 200 120" width="100%">
+    <g class="phase-a">
+      <rect x="40" y="62" width="120" height="18" rx="5" fill="none" stroke="#4f8eff" stroke-width="2"/>
+      <circle cx="165" cy="68" r="9" fill="none" stroke="#4f8eff" stroke-width="2"/>
+      <line x1="75" y1="68" x2="75" y2="45" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="125" y1="68" x2="125" y2="45" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="75" y1="45" x2="75" y2="35" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="125" y1="45" x2="125" y2="35" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="40" y1="68" x2="25" y2="55" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="100" y="112" text-anchor="middle" fill="#4f8eff" font-size="9" font-family="DM Mono,monospace">START — arms & knees at 90°</text>
+    </g>
+    <g class="phase-b">
+      <rect x="40" y="62" width="120" height="18" rx="5" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <circle cx="165" cy="68" r="9" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="75" y1="68" x2="55" y2="48" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="55" y1="48" x2="38" y2="38" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="125" y1="68" x2="125" y2="45" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="125" y1="45" x2="125" y2="35" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="40" y1="68" x2="22" y2="84" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="22" y1="84" x2="15" y2="95" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <text x="100" y="112" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">EXTEND — opposite arm & leg</text>
+    </g>
+   </svg>`,
+   phases:['Lie on back, arms pointing to ceiling, knees at 90° directly over hips','Slowly extend one arm overhead and opposite leg down — lower back stays FLAT on floor'],
+   mistakes:['Lower back arching off floor — this is the main error','Moving limbs too fast, relying on momentum','Holding breath throughout the movement'],
+   cues:['Press lower back actively into the floor at all times','Move only as far as you can without losing floor contact','Exhale as you extend, inhale as you return']
+  },
+  {id:'fc-hollow',name:'Hollow Hold',cat:'isometric',
+   svg:()=>`<svg viewBox="0 0 200 100" width="100%">
+    <g class="phase-slow-a">
+      <path d="M25 80 Q100 45 175 65" stroke="#00e87a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <circle cx="175" cy="65" r="9" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="155" y1="60" x2="145" y2="48" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="145" y1="48" x2="138" y2="38" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="25" y1="80" x2="15" y2="68" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="15" y1="68" x2="8" y2="56" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <text x="100" y="96" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">HOLLOW — banana shape</text>
+    </g>
+    <g class="phase-slow-b">
+      <line x1="25" y1="68" x2="175" y2="68" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="175" cy="66" r="9" fill="none" stroke="#4f8eff" stroke-width="2"/>
+      <line x1="155" y1="66" x2="148" y2="52" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="148" y1="52" x2="144" y2="40" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="25" y1="68" x2="15" y2="56" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="15" y1="56" x2="8" y2="44" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <text x="100" y="96" text-anchor="middle" fill="#4f8eff" font-size="9" font-family="DM Mono,monospace">MODIFY — knees tucked</text>
+    </g>
+   </svg>`,
+   phases:['Lower back pressed to floor, arms overhead, legs raised — hold the banana curve','Regression: tuck knees toward chest to reduce lever arm'],
+   mistakes:['Lower back arching off floor — the entire point is to prevent this','Arms drifting forward rather than staying overhead','Leg height too low before lower back can stay flat'],
+   cues:['Think of pulling your belly button toward your spine','Lower legs only as far as back stays flat','Rock side-to-side gently to find the optimal tension point']
+  },
+  {id:'fc-diamond',name:'Diamond Push-up',cat:'push',
+   svg:()=>`<svg viewBox="0 0 200 100" width="100%">
+    <g class="phase-a">
+      <line x1="40" y1="60" x2="160" y2="60" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="168" cy="60" r="8" fill="none" stroke="#4f8eff" stroke-width="2"/>
+      <line x1="88" y1="60" x2="95" y2="78" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="112" y1="60" x2="105" y2="78" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="95" y1="78" x2="100" y2="82" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="105" y1="78" x2="100" y2="82" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <polygon points="88,60 100,70 112,60 100,50" fill="rgba(79,142,255,.15)" stroke="#4f8eff" stroke-width="1"/>
+      <text x="100" y="97" text-anchor="middle" fill="#4f8eff" font-size="9" font-family="DM Mono,monospace">TOP — diamond hand position</text>
+    </g>
+    <g class="phase-b">
+      <line x1="40" y1="60" x2="160" y2="60" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="168" cy="60" r="8" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="88" y1="60" x2="90" y2="78" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="112" y1="60" x2="110" y2="78" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="90" y1="78" x2="100" y2="82" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="110" y1="78" x2="100" y2="82" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <polygon points="88,60 100,70 112,60 100,50" fill="rgba(0,232,122,.12)" stroke="#00e87a" stroke-width="1"/>
+      <text x="100" y="97" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">BOTTOM — triceps deep stretch</text>
+    </g>
+   </svg>`,
+   phases:['Thumbs and index fingers form a diamond shape under the sternum, arms extended','Lower chest toward hands while keeping elbows pointing back, not out'],
+   mistakes:['Hands too far forward or apart — reduces diamond tension','Elbows drifting outward — shifts load to chest, away from triceps','Wrists collapsing inward under load'],
+   cues:['Keep elbows tracking backward and close to the body','Imagine a straight line from elbow to elbow at the bottom','Start on your knees if needed — this is an advanced variation']
+  },
+  {id:'fc-side-plank',name:'Side Plank',cat:'core',
+   svg:()=>`<svg viewBox="0 0 200 110" width="100%">
+    <g class="phase-slow-a">
+      <line x1="35" y1="55" x2="165" y2="75" stroke="#00e87a" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="172" cy="72" r="9" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="35" y1="55" x2="25" y2="65" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="25" y1="65" x2="35" y2="65" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="100" y1="65" x2="92" y2="46" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="92" y1="46" x2="84" y2="36" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <text x="100" y="100" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">CORRECT — hips elevated, body line</text>
+    </g>
+    <g class="phase-slow-b">
+      <path d="M35 55 Q100 80 165 75" stroke="#ff6b35" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <circle cx="172" cy="72" r="9" fill="none" stroke="#ff6b35" stroke-width="2"/>
+      <line x1="35" y1="55" x2="25" y2="65" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="25" y1="65" x2="35" y2="65" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="100" cy="74" rx="18" ry="8" fill="rgba(255,107,53,.15)" stroke="#ff6b35" stroke-width="1"/>
+      <text x="100" y="100" text-anchor="middle" fill="#ff6b35" font-size="9" font-family="DM Mono,monospace">MISTAKE — hip sag</text>
+    </g>
+   </svg>`,
+   phases:['Stack feet, elbow directly under shoulder, lift hips to form a straight line','Top arm can be extended upward for balance and full lat engagement'],
+   mistakes:['Hip sagging toward floor — most common error','Shoulder rolling forward — keep stacked directly above elbow','Neck straining — maintain neutral spine throughout'],
+   cues:['Push the floor away with your bottom forearm to elevate the hip','Think about creating one long line from head to heels','Squeeze the glute of the top leg to maintain elevation']
+  },
+  {id:'fc-bulgarian',name:'Bulgarian Split Squat',cat:'squat',
+   svg:()=>`<svg viewBox="0 0 200 120" width="100%">
+    <g class="phase-a">
+      <circle cx="120" cy="22" r="10" fill="none" stroke="#4f8eff" stroke-width="2"/>
+      <line x1="120" y1="32" x2="118" y2="58" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="118" y1="58" x2="96" y2="88" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="96" y1="88" x2="85" y2="110" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="118" y1="58" x2="145" y2="78" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="145" y1="78" x2="158" y2="90" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <rect x="150" y="88" width="30" height="6" rx="2" fill="var(--surface2)" stroke="#4f8eff" stroke-width="1"/>
+      <text x="100" y="118" text-anchor="middle" fill="#4f8eff" font-size="9" font-family="DM Mono,monospace">STANDING — tall spine</text>
+    </g>
+    <g class="phase-b">
+      <circle cx="100" cy="30" r="10" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="100" y1="40" x2="98" y2="65" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="98" y1="65" x2="78" y2="95" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="78" y1="95" x2="70" y2="110" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="98" y1="65" x2="138" y2="75" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="138" y1="75" x2="155" y2="88" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <rect x="148" y="86" width="30" height="6" rx="2" fill="var(--surface2)" stroke="#00e87a" stroke-width="1"/>
+      <text x="100" y="118" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">BOTTOM — knee near floor</text>
+    </g>
+   </svg>`,
+   phases:['Rear foot elevated on surface, front foot 2-3 feet forward, torso upright','Lower until rear knee nearly touches floor, front shin stays vertical'],
+   mistakes:['Front knee collapsing inward — push knee outward over 2nd toe','Torso leaning too far forward — creates shear on the knee','Rear foot too high — elevate only 8-12 inches off the floor'],
+   cues:['Most of the weight should be through the front heel, not the toes','Keep hips squared to the front at all times','Use a wall for balance while building confidence']
+  },
+  {id:'fc-pike',name:'Pike Push-up',cat:'push',
+   svg:()=>`<svg viewBox="0 0 200 120" width="100%">
+    <g class="phase-a">
+      <path d="M50 95 L100 45 L150 95" stroke="#4f8eff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="100" cy="36" r="9" fill="none" stroke="#4f8eff" stroke-width="2"/>
+      <line x1="60" y1="95" x2="50" y2="105" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="50" y1="105" x2="38" y2="105" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="140" y1="95" x2="148" y2="107" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <text x="100" y="118" text-anchor="middle" fill="#4f8eff" font-size="9" font-family="DM Mono,monospace">TOP — inverted V position</text>
+    </g>
+    <g class="phase-b">
+      <path d="M50 95 L100 60 L150 95" stroke="#00e87a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="100" cy="50" r="9" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="60" y1="95" x2="50" y2="105" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="50" y1="105" x2="38" y2="105" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="140" y1="95" x2="148" y2="107" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <text x="100" y="118" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">BOTTOM — forehead near hands</text>
+    </g>
+   </svg>`,
+   phases:['Inverted V shape (downward dog), hands shoulder-width, hips high, arms straight','Bend elbows and lower top of head toward floor between hands, then press up'],
+   mistakes:['Hips dropping as you lower — defeats the shoulder-focus purpose','Head touching floor instead of forehead — changes the movement angle','Feet too close to hands — reduces shoulder loading angle'],
+   cues:['The closer your feet to hands, the more vertical = more shoulder work','Treat it as a handstand push-up regression','Keep elbows tracking slightly outward — not flaring, not tucking']
+  },
+  {id:'fc-lsit',name:'L-Sit Hold',cat:'core',
+   svg:()=>`<svg viewBox="0 0 200 110" width="100%">
+    <g class="phase-slow-a">
+      <circle cx="100" cy="32" r="10" fill="none" stroke="#4f8eff" stroke-width="2"/>
+      <line x1="100" y1="42" x2="100" y2="72" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="100" y1="55" x2="72" y2="68" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="72" y1="68" x2="58" y2="78" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="100" y1="55" x2="128" y2="68" stroke="#4f8eff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="128" y1="68" x2="142" y2="78" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="100" y1="72" x2="100" y2="95" stroke="#4f8eff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="68" y1="78" x2="58" y2="80" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="132" y1="78" x2="142" y2="80" stroke="#4f8eff" stroke-width="2" stroke-linecap="round"/>
+      <text x="100" y="108" text-anchor="middle" fill="#4f8eff" font-size="9" font-family="DM Mono,monospace">SETUP — arms down, seated</text>
+    </g>
+    <g class="phase-slow-b">
+      <circle cx="100" cy="25" r="10" fill="none" stroke="#00e87a" stroke-width="2"/>
+      <line x1="100" y1="35" x2="100" y2="65" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="100" y1="48" x2="68" y2="55" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="68" y1="55" x2="56" y2="62" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="100" y1="48" x2="132" y2="55" stroke="#00e87a" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="132" y1="55" x2="144" y2="62" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="100" y1="65" x2="58" y2="65" stroke="#00e87a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="58" y1="62" x2="42" y2="62" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="144" y1="62" x2="156" y2="62" stroke="#00e87a" stroke-width="2" stroke-linecap="round"/>
+      <text x="100" y="108" text-anchor="middle" fill="#00e87a" font-size="9" font-family="DM Mono,monospace">L-SIT — legs parallel to floor</text>
+    </g>
+   </svg>`,
+   phases:['Sit with legs extended, hands flat beside hips, press down through straight arms to lift hips off floor','Hold with legs parallel to floor, shoulders depressed, arms fully locked out'],
+   mistakes:['Elbows not fully locked — must have straight arms','Shoulders shrugging upward — depress them down aggressively','Feet touching floor — the entire goal is clearing the floor'],
+   cues:['Tuck L-sit (bent knees) is an acceptable progression','Think "push the Earth away" through straight arms','Compress hip flexors to keep legs elevated']
+  }
+];
+
+// =================== NAVIGATION ===================
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('nb-'+name).classList.add('active');
+  if(name==='history') renderHistory();
+}
+
+// =================== ONBOARD ===================
+function adjCnt(d){S.pushUps=Math.max(0,S.pushUps+d);document.getElementById('pu-cnt').textContent=S.pushUps}
+function nextOb(){
+  document.getElementById('obs0').classList.remove('active');
+  document.getElementById('obs1').classList.add('active');
+  document.getElementById('pd0').className='pdot done';
+  document.getElementById('pd1').className='pdot active';
+}
+function toggleWS(){
+  const btn=document.getElementById('ws-btn');
+  if(!S.wsRunning){
+    S.wsRunning=true;btn.textContent='⏹ Stop Timer';
+    S.wsInt=setInterval(()=>{
+      S.wallSitSec++;
+      document.getElementById('ws-t').textContent=S.wallSitSec;
+      document.getElementById('trp').style.strokeDashoffset=376-Math.min(376*S.wallSitSec/120,376);
+    },1000);
+  }else{
+    clearInterval(S.wsInt);S.wsRunning=false;btn.textContent='✓ Done';btn.disabled=true;
+    document.getElementById('ws-next').style.display='block';
+    document.getElementById('pd1').className='pdot done';
+    document.getElementById('pd2').className='pdot active';
+  }
+}
+function calcPlacement(){
+  const pu=S.pushUps,ws=S.wallSitSec;
+  if(pu>=20&&ws>=90)S.level='advanced';
+  else if(pu>=8&&ws>=45)S.level='intermediate';
+  else S.level='beginner';
+  const unlockMap={push:['knee-pu',pu>=1,'incline-pu',pu>=5,'std-pu',pu>=10,'wide-pu',pu>=20,'diamond-pu',pu>=20],squat:['air-sq',ws>=10,'pause-sq',ws>=30,'jump-sq',ws>=60],core:['plank',true]};
+  [['push',['knee-pu',pu>=1],['incline-pu',pu>=5],['std-pu',pu>=10],['wide-pu',pu>=20],['diamond-pu',pu>=20]],
+   ['squat',['air-sq',ws>=10],['pause-sq',ws>=30],['jump-sq',ws>=60]],
+   ['core',['plank',true]]].forEach(([t,...pairs])=>{pairs.forEach(([id,cond])=>{if(cond)unlockNode(t,id)})});
+  if(S.level==='beginner')S.goal='Complete 10 perfect push-ups and hold a 60-second plank.';
+  else if(S.level==='intermediate')S.goal='Master the Standard Push-up and unlock the Pistol Squat path.';
+  else S.goal='Unlock the Archer Push-up and the Dragon Flag.';
+  const icons={beginner:'🌱',intermediate:'⚡',advanced:'🔥'};
+  const titles={beginner:'Warrior Initiate',intermediate:'Iron Soldier',advanced:'Gravity Master'};
+  document.getElementById('pl-ico').textContent=icons[S.level];
+  document.getElementById('pl-ttl').textContent=titles[S.level];
+  document.getElementById('pl-sub').textContent=`Rank: ${S.level.charAt(0).toUpperCase()+S.level.slice(1)} — your trees have been calibrated.`;
+  document.getElementById('pl-pv').textContent=pu;
+  document.getElementById('pl-wv').textContent=ws;
+  document.getElementById('pl-goal').textContent=S.goal;
+  go('s-placement');
+}
+function unlockNode(t,id){const n=TREES[t].find(x=>x.id===id);if(n&&n.status==='locked')n.status='unlocked'}
+function enterApp(){
+  document.getElementById('p-goal').textContent=S.goal;
+  renderAllTrees();renderFormLib();updateXP();go('s-app');
+}
+
+// =================== SKILL TREES ===================
+function renderAllTrees(){['push','squat','core'].forEach(t=>renderTree(t))}
+function showTree(name,btn){
+  document.querySelectorAll('.tt').forEach(t=>t.classList.remove('active'));btn.classList.add('active');
+  ['push','squat','core'].forEach(t=>{document.getElementById('tree-'+t).style.display=t===name?'block':'none'});
+  S.currentTree=name;document.getElementById('skill-detail').classList.remove('show');
+}
+function renderTree(name){
+  const nodes=TREES[name];
+  const maxY=Math.max(...nodes.map(n=>n.y))+80;
+  const cols={mastered:'#00e87a',unlocked:'#4f8eff',locked:'#16162a'};
+  const strokes={mastered:'#00e87a',unlocked:'#4f8eff',locked:'#2a2a45'};
+  const tc={mastered:'#08080f',unlocked:'#ffffff',locked:'#3a3a5a'};
+  let edges='',svgNodes='';
+  nodes.forEach(n=>{
+    n.prereqs.forEach(pid=>{
+      const p=nodes.find(x=>x.id===pid);if(!p)return;
+      const c=n.status==='locked'?'#1a1a2e':n.status==='mastered'?'#00e87a':'#4f8eff';
+      edges+=`<line x1="${p.x}" y1="${p.y+26}" x2="${n.x}" y2="${n.y-26}" stroke="${c}" stroke-width="1.5" stroke-dasharray="${n.status==='locked'?'4,4':'none'}" opacity="0.5"/>`;
+    });
+  });
+  nodes.forEach((n,i)=>{
+    const glow=n.status==='mastered'?'filter:drop-shadow(0 0 8px #00e87a)':n.status==='unlocked'?'filter:drop-shadow(0 0 6px rgba(79,142,255,.6))':'';
+    const icon=n.status==='mastered'?'✓':n.status==='locked'?'🔒':'';
+    const shortName=n.name.split(' ').slice(0,2).join(' ');
+    svgNodes+=`<g class="node-g" onclick="selectSkill('${name}','${n.id}')" style="${glow}">
+      <circle cx="${n.x}" cy="${n.y}" r="24" fill="${cols[n.status]}" stroke="${strokes[n.status]}" stroke-width="2"/>
+      <text x="${n.x}" y="${n.y+5}" text-anchor="middle" fill="${tc[n.status]}" font-size="10" font-family="Syne,sans-serif" font-weight="600">${icon||n.name.split(' ')[0].slice(0,5)}</text>
+      <text x="${n.x}" y="${n.y+42}" text-anchor="middle" fill="${n.status==='locked'?'#2a2a45':'#8888aa'}" font-size="9" font-family="Syne,sans-serif">${shortName}</text>
+    </g>`;
+  });
+  document.getElementById('tree-'+name).innerHTML=`<svg class="skill-svg" viewBox="0 0 320 ${maxY}" style="height:${maxY}px">${edges}${svgNodes}</svg>`;
+}
+function selectSkill(tree,id){
+  const n=TREES[tree].find(x=>x.id===id);if(!n)return;
+  const detail=document.getElementById('skill-detail');
+  const gc=n.status==='mastered'?'sdg m':n.status==='unlocked'?'sdg u':'sdg l';
+  const gt=n.status==='mastered'?'Mastered':n.status==='unlocked'?'Unlocked':'Locked';
+  detail.innerHTML=`
+    <div class="sd-hdr"><div class="sd-name">${n.name}</div><span class="${gc}">${gt}</span></div>
+    <div class="sd-body">${n.desc}</div>
+    <div class="sd-tips"><div class="sdt-ttl">Common Mistakes</div>${n.mistakes.map(m=>`<div class="sdt-row">${m}</div>`).join('')}</div>
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-m);margin-bottom:10px">TARGET: ${n.target}</div>
+    <button class="mstr-btn" ${n.status!=='unlocked'?'disabled':''} onclick="masterSkill('${tree}','${id}')">
+      ${n.status==='mastered'?'✓ Already Mastered':n.status==='locked'?'🔒 Complete prerequisites first':'Mark as Mastered → +50 XP'}
+    </button>`;
+  detail.classList.add('show');
+  detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function masterSkill(tree,id){
+  const n=TREES[tree].find(x=>x.id===id);if(!n||n.status!=='unlocked')return;
+  n.status='mastered';S.masteredSkills.push(id);S.xp+=50;
+  TREES[tree].forEach(x=>{
+    if(x.prereqs.includes(id)&&x.status==='locked'){
+      if(x.prereqs.every(p=>TREES[tree].find(y=>y.id===p)?.status==='mastered'))x.status='unlocked';
+    }
+  });
+  renderTree(tree);updateXP();
+  document.getElementById('skill-detail').classList.remove('show');
+  celebrate('⚡','SKILL MASTERED!',`${n.name} is now in your arsenal. New paths unlocked.`);
+}
+
+// =================== WORKOUT ===================
+async function generateWorkout(){
+  const btn=document.getElementById('gen-btn'),err=document.getElementById('w-err'),loading=document.getElementById('w-load'),result=document.getElementById('w-result');
+  err.style.display='none';result.style.display='none';btn.disabled=true;loading.style.display='block';S.doneEx=[];
+  const filters=[];
+  if(S.yogaMode)filters.push('Yoga Mat Mode: exercises must fit within a yoga mat footprint only');
+  if(S.quietMode)filters.push('Quiet Apartment Mode: NO explosive or jumping moves — use slow eccentrics, isometric holds, and tempo work only');
+  const prompt=`Create a calisthenics workout for a ${S.level} level person. Mastered: ${S.masteredSkills.join(', ')||'none'}.
+${filters.length?'Filters: '+filters.join('. '):''}
+Return ONLY raw JSON: {"title":"Name","tagline":"Tagline","exercises":[{"name":"Name","sets":3,"reps":"12 reps","muscles":"Muscles","quiet":false,"tip":"Form tip"}]}
+Include 5-6 exercises. quiet=true for silent/no-impact moves.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+res.status)}
+    const data=await res.json();
+    const raw=data.content?.map(i=>i.text||'').join('')||'';
+    const match=raw.match(/\{[\s\S]*\}/);if(!match)throw new Error('Parse failed');
+    const w=JSON.parse(match[0]);
+    S.activeWorkout={...w,level:S.level,date:new Date().toISOString(),filters:{yoga:S.yogaMode,quiet:S.quietMode}};
+    renderWorkoutResult(w);
+  }catch(e){
+    loading.style.display='none';err.style.display='block';err.textContent='⚠ '+e.message;btn.disabled=false;
+  }
+}
+function renderWorkoutResult(w){
+  document.getElementById('w-load').style.display='none';
+  document.getElementById('gen-btn').disabled=false;
+  const result=document.getElementById('w-result');
+  const ftags=[S.yogaMode&&'🧘 Yoga Mat',S.quietMode&&'🔇 Quiet Mode'].filter(Boolean).join(' · ');
+  let html=`<div class="wr-title">${w.title||'Custom Session'}</div><div class="wr-meta">${w.tagline||''} ${ftags?'· '+ftags:''}</div>`;
+  (w.exercises||[]).forEach((ex,i)=>{
+    html+=`<div class="ex-row" id="exr-${i}" onclick="toggleEx(${i})">
+      <div class="ex-idx">0${i+1}</div>
+      <div style="flex:1">
+        <div class="ex-n">${ex.name}</div>
+        <div class="ex-d">${ex.sets} sets × ${ex.reps} · ~45s rest</div>
+        <span class="ex-tag">${ex.muscles}</span>${ex.quiet?'<span class="ex-qtag">silent</span>':''}
+        <div class="ex-tip-row">💡 ${ex.tip}<br><button class="mark-btn" onclick="markDone(${i},event)">✓ Done (+10 XP)</button></div>
+      </div>
+      <div class="ex-tick"><svg id="tick-${i}" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3" style="display:none"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>`;
+  });
+  result.innerHTML=html;result.style.display='block';
+}
+function toggleEx(i){const r=document.getElementById('exr-'+i);const o=r.classList.contains('open');document.querySelectorAll('.ex-row').forEach(x=>x.classList.remove('open'));if(!o)r.classList.add('open')}
+function markDone(i,e){
+  e.stopPropagation();
+  const r=document.getElementById('exr-'+i);if(r.classList.contains('done-ex'))return;
+  r.classList.add('done-ex');r.classList.remove('open');
+  document.getElementById('tick-'+i).style.display='block';
+  S.xp+=10;S.doneEx.push(i);updateXP();
+  const total=document.querySelectorAll('.ex-row').length;
+  if(S.doneEx.length>=total){
+    S.xp+=30;S.streak++;updateXP();
+    saveWorkoutToHistory();
+    celebrate('🏆','WORKOUT COMPLETE!',`+30 bonus XP. Session saved to history. Come back stronger.`);
+  }
+}
+function toggleWT(){
+  const btn=document.getElementById('wt-btn');
+  if(!S.wTimerRunning){S.wTimerRunning=true;btn.textContent='Pause';S.wTimerInt=setInterval(()=>{S.wTimerSec++;const m=String(Math.floor(S.wTimerSec/60)).padStart(2,'0');const s=String(S.wTimerSec%60).padStart(2,'0');document.getElementById('w-timer').textContent=m+':'+s},1000)}
+  else{S.wTimerRunning=false;btn.textContent='Resume';clearInterval(S.wTimerInt)}
+}
+function resetWT(){clearInterval(S.wTimerInt);S.wTimerRunning=false;S.wTimerSec=0;document.getElementById('w-timer').textContent='00:00';document.getElementById('wt-btn').textContent='Start'}
+
+// =================== FORM LIBRARY ===================
+let activeCat='all',formSearchQ='';
+function renderFormLib(){
+  const grid=document.getElementById('form-grid');
+  const items=FORM_LIBRARY.filter(f=>{
+    const matchCat=activeCat==='all'||f.cat===activeCat;
+    const matchQ=!formSearchQ||f.name.toLowerCase().includes(formSearchQ.toLowerCase());
+    return matchCat&&matchQ;
+  });
+  grid.innerHTML=items.map(f=>`
+    <div class="form-card" id="fcard-${f.id}" onclick="toggleFormCard('${f.id}')">
+      <div class="fc-anim">${f.svg()}</div>
+      <div class="fc-body"><div class="fc-name">${f.name}</div><div class="fc-cat">${f.cat}</div></div>
+      <div class="fc-expand">
+        <div class="fce-section">
+          <div class="fce-title blue">Movement Phases</div>
+          ${f.phases.map((p,i)=>`<div class="fce-row">Phase ${i+1}: ${p}</div>`).join('')}
+        </div>
+        <div class="fce-section">
+          <div class="fce-title orange">Common Mistakes</div>
+          ${f.mistakes.map(m=>`<div class="fce-row">⚠ ${m}</div>`).join('')}
+        </div>
+        <div class="fce-section" style="margin-bottom:0">
+          <div class="fce-title green">Coaching Cues</div>
+          ${f.cues.map(c=>`<div class="fce-row">✦ ${c}</div>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+}
+function toggleFormCard(id){
+  const card=document.getElementById('fcard-'+id);
+  const wasExpanded=card.classList.contains('expanded');
+  document.querySelectorAll('.form-card').forEach(c=>c.classList.remove('expanded'));
+  if(!wasExpanded)card.classList.add('expanded');
+}
+function setCat(btn){document.querySelectorAll('.form-cat').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeCat=btn.dataset.cat;renderFormLib()}
+function filterFormLib(){formSearchQ=document.getElementById('form-search').value;renderFormLib()}
+
+// =================== HISTORY ===================
+async function saveWorkoutToHistory(){
+  if(!S.activeWorkout)return;
+  const entry={id:Date.now(),date:new Date().toISOString(),title:S.activeWorkout.title,tagline:S.activeWorkout.tagline||'',exercises:S.activeWorkout.exercises||[],duration:S.wTimerSec,xp:S.doneEx.length*10+30,level:S.level,filters:{yoga:S.yogaMode,quiet:S.quietMode}};
+  try{
+    let existing=[];
+    try{const r=await window.storage.get('zerogear:history');if(r)existing=JSON.parse(r.value)}catch(e){}
+    existing.unshift(entry);
+    if(existing.length>50)existing=existing.slice(0,50);
+    await window.storage.set('zerogear:history',JSON.stringify(existing));
+  }catch(e){console.log('Storage error:',e)}
+}
+async function renderHistory(){
+  const container=document.getElementById('hist-content');
+  container.innerHTML='<div class="wl-sp" style="margin:2rem auto"></div>';
+  let history=[];
+  try{const r=await window.storage.get('zerogear:history');if(r)history=JSON.parse(r.value)}catch(e){}
+  if(!history.length){
+    container.innerHTML=`<div class="hist-empty"><div class="hist-empty-icon">📋</div><div class="hist-empty-txt">No workouts logged yet.<br>Complete a workout to see history here.</div></div>`;
+    return;
+  }
+  const totalXP=history.reduce((a,h)=>a+h.xp,0);
+  const totalMins=Math.round(history.reduce((a,h)=>a+h.duration,0)/60);
+  let html=`
+    <div class="hist-stats">
+      <div class="hstat"><div class="hstat-v" style="color:var(--accent)">${history.length}</div><div class="hstat-l">Sessions</div></div>
+      <div class="hstat"><div class="hstat-v" style="color:var(--orange)">${totalMins}</div><div class="hstat-l">Minutes</div></div>
+      <div class="hstat"><div class="hstat-v" style="color:var(--blue)">${totalXP}</div><div class="hstat-l">XP Earned</div></div>
+    </div>
+    <button class="clear-hist" onclick="clearHistory()">Clear All</button>
+    <div style="clear:both"></div>
+    <div class="hist-list">`;
+  history.forEach((h,i)=>{
+    const d=new Date(h.date);
+    const dateStr=d.toLocaleDateString('en-IN',{weekday:'short',month:'short',day:'numeric'});
+    const timeStr=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    const dur=h.duration?`${Math.floor(h.duration/60)}:${String(h.duration%60).padStart(2,'0')}`:'—';
+    html+=`<div class="hist-card" id="hc-${i}" onclick="toggleHistCard(${i})">
+      <div class="hc-top">
+        <div><div class="hc-title">${h.title}</div><div class="hc-meta">${dateStr} · ${timeStr} · ${dur}</div></div>
+        <div class="hc-xp">+${h.xp} XP</div>
+      </div>
+      <div class="hc-detail">
+        ${(h.exercises||[]).map(e=>`<div class="hc-ex-row">${e.name} — ${e.sets}×${e.reps}</div>`).join('')}
+        <div class="hc-tags">
+          <span class="hc-tag lvl">${h.level}</span>
+          ${h.filters?.yoga?'<span class="hc-tag yoga">🧘 yoga mat</span>':''}
+          ${h.filters?.quiet?'<span class="hc-tag quiet">🔇 quiet mode</span>':''}
+        </div>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  container.innerHTML=html;
+}
+function toggleHistCard(i){
+  const c=document.getElementById('hc-'+i);c.classList.toggle('open');
+}
+async function clearHistory(){
+  if(!confirm('Clear all workout history?'))return;
+  try{await window.storage.delete('zerogear:history')}catch(e){}
+  renderHistory();
+}
+
+// =================== FILTERS ===================
+function toggleF(type){
+  if(type==='yoga'){S.yogaMode=!S.yogaMode;document.getElementById('fc-yoga').classList.toggle('on',S.yogaMode);document.getElementById('t-yoga').className='tog '+(S.yogaMode?'on':'off')}
+  else{S.quietMode=!S.quietMode;document.getElementById('fc-quiet').classList.toggle('on',S.quietMode);document.getElementById('t-quiet').className='tog '+(S.quietMode?'on':'off')}
+}
+function toggleGTG(){S.gtg=!S.gtg;document.getElementById('t-gtg').className='tog '+(S.gtg?'on':'off');document.getElementById('gtg-test').classList.toggle('hidden',!S.gtg)}
+const GTG=['💪 Drop and give me 10 push-ups!','🦵 15 air squats — GO!','🧘 30-second plank right now!','⚡ Wall-sit for 20 seconds!','🔥 10 slow tempo squats — feel every rep.'];
+function fireGTG(){celebrate('🔔','GREASE THE GROOVE',GTG[Math.floor(Math.random()*GTG.length)])}
+
+// =================== XP ===================
+function updateXP(){
+  const lvl=Math.floor(S.xp/100)+1,xpIn=S.xp%100;
+  document.getElementById('hdr-xp').textContent=S.xp+' XP';
+  document.getElementById('p-lvl').textContent=lvl;
+  document.getElementById('p-xp').textContent=S.xp;
+  document.getElementById('xp-fill').style.width=xpIn+'%';
+  document.getElementById('xp-nxt').textContent=`${xpIn} / 100 XP to Level ${lvl+1}`;
+  document.getElementById('p-streak').textContent=S.streak+'🔥';
+  document.getElementById('p-mastered').textContent=S.masteredSkills.length;
+}
+
+// =================== CELEBRATE ===================
+function celebrate(icon,title,sub){
+  document.getElementById('cel-ico').textContent=icon;
+  document.getElementById('cel-ttl').textContent=title;
+  document.getElementById('cel-sub').textContent=sub;
+  const pts=document.getElementById('cel-pts');pts.innerHTML='';
+  const cols=['#00e87a','#4f8eff','#ff6b35','#a855f7','#fff'];
+  for(let i=0;i<28;i++){
+    const p=document.createElement('div');p.className='particle';
+    const a=Math.random()*360,d=80+Math.random()*180;
+    p.style.cssText=`left:${15+Math.random()*70}%;top:${15+Math.random()*70}%;background:${cols[i%cols.length]};--tx:${Math.cos(a*Math.PI/180)*d}px;--ty:${Math.sin(a*Math.PI/180)*d}px;animation-delay:${Math.random()*.3}s`;
+    pts.appendChild(p);
+  }
+  document.getElementById('cel').classList.add('show');
+}
+function closeCel(){document.getElementById('cel').classList.remove('show')}
+</script>
+</body>
+</html>

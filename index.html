@@ -900,16 +900,31 @@ ${filters.length?'Filters: '+filters.join('. '):''}
 Return ONLY raw JSON: {"title":"Name","tagline":"Tagline","exercises":[{"name":"Name","sets":3,"reps":"12 reps","muscles":"Muscles","quiet":false,"tip":"Form tip"}]}
 Include 5-6 exercises. quiet=true for silent/no-impact moves.`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+res.status)}
-    const data=await res.json();
-    const raw=data.content?.map(i=>i.text||'').join('')||'';
-    const match=raw.match(/\{[\s\S]*\}/);if(!match)throw new Error('Parse failed');
-    const w=JSON.parse(match[0]);
-    S.activeWorkout={...w,level:S.level,date:new Date().toISOString(),filters:{yoga:S.yogaMode,quiet:S.quietMode}};
+    // We are now calling YOUR secure Vercel API route, not Anthropic directly
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    
+    if(!res.ok){
+      const e = await res.json().catch(()=>({}));
+      throw new Error(e.error || 'Failed to connect to generator');
+    }
+    
+    const data = await res.json();
+    const raw = data.content?.map(i=>i.text||'').join('')||'';
+    const match = raw.match(/\{[\s\S]*\}/);
+    if(!match) throw new Error('Could not parse workout data');
+    
+    const w = JSON.parse(match[0]);
+    S.activeWorkout = {...w, level: S.level, date: new Date().toISOString(), filters: {yoga: S.yogaMode, quiet: S.quietMode}};
     renderWorkoutResult(w);
-  }catch(e){
-    loading.style.display='none';err.style.display='block';err.textContent='⚠ '+e.message;btn.disabled=false;
+  } catch(e) {
+    loading.style.display='none';
+    err.style.display='block';
+    err.textContent='⚠ ' + e.message;
+    btn.disabled=false;
   }
 }
 function renderWorkoutResult(w){

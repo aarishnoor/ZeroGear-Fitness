@@ -997,17 +997,17 @@ async function saveWorkoutToHistory(){
   const entry={id:Date.now(),date:new Date().toISOString(),title:S.activeWorkout.title,tagline:S.activeWorkout.tagline||'',exercises:S.activeWorkout.exercises||[],duration:S.wTimerSec,xp:S.doneEx.length*10+30,level:S.level,filters:{yoga:S.yogaMode,quiet:S.quietMode}};
   try{
     let existing=[];
-    try{const r=await window.storage.get('zerogear:history');if(r)existing=JSON.parse(r.value)}catch(e){}
+    try{const r=window.localStorage.getItem('zerogear:history');if(r)existing=JSON.parse(r)}catch(e){}
     existing.unshift(entry);
     if(existing.length>50)existing=existing.slice(0,50);
-    await window.storage.set('zerogear:history',JSON.stringify(existing));
+    window.localStorage.setItem('zerogear:history',JSON.stringify(existing));
   }catch(e){console.log('Storage error:',e)}
 }
 async function renderHistory(){
   const container=document.getElementById('hist-content');
   container.innerHTML='<div class="wl-sp" style="margin:2rem auto"></div>';
   let history=[];
-  try{const r=await window.storage.get('zerogear:history');if(r)history=JSON.parse(r.value)}catch(e){}
+  try{const r=window.localStorage.getItem('zerogear:history');if(r)history=JSON.parse(r)}catch(e){}
   if(!history.length){
     container.innerHTML=`<div class="hist-empty"><div class="hist-empty-icon">📋</div><div class="hist-empty-txt">No workouts logged yet.<br>Complete a workout to see history here.</div></div>`;
     return;
@@ -1051,7 +1051,7 @@ function toggleHistCard(i){
 }
 async function clearHistory(){
   if(!confirm('Clear all workout history?'))return;
-  try{await window.storage.delete('zerogear:history')}catch(e){}
+  try{window.localStorage.removeItem('zerogear:history')}catch(e){}
   renderHistory();
 }
 

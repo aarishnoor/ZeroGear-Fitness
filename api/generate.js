@@ -7,17 +7,15 @@ export default async function handler(req, res) {
   try {
     const { prompt } = req.body;
 
-    // Call the Anthropic API securely from the server
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Call the Groq API securely from the server
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'claude-3-5-haiku-20241022', // Updated to the official stable string
-        max_tokens: 1000,
+        model: 'llama3-8b-8192', // Blazing fast, open-source model available on Groq's free tier
         messages: [{ role: 'user', content: prompt }]
       })
     });

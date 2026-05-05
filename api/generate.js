@@ -15,8 +15,18 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile', // Blazing fast, open-source model available on Groq's free tier
-        messages: [{ role: 'user', content: prompt }]
+        model: 'llama-3.3-70b-versatile', 
+        response_format: { type: 'json_object' }, // THIS FORCES PERFECT JSON
+        messages: [
+          { 
+            role: 'system', 
+            content: 'You are a fitness AI. You output strict, valid JSON only. Never include markdown formatting like ```json.' 
+          },
+          { 
+            role: 'user', 
+            content: prompt 
+          }
+        ]
       })
     });
 

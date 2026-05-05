@@ -913,7 +913,7 @@ Include 5-6 exercises. quiet=true for silent/no-impact moves.`;
     }
     
     const data = await res.json();
-    const raw = data.content?.map(i=>i.text||'').join('')||'';
+    const raw = data.choices?.[0]?.message?.content || '';
     const match = raw.match(/\{[\s\S]*\}/);
     if(!match) throw new Error('Could not parse workout data');
     

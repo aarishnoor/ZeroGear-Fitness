@@ -892,13 +892,14 @@ function masterSkill(tree,id){
 async function generateWorkout(){
   const btn=document.getElementById('gen-btn'),err=document.getElementById('w-err'),loading=document.getElementById('w-load'),result=document.getElementById('w-result');
   err.style.display='none';result.style.display='none';btn.disabled=true;loading.style.display='block';S.doneEx=[];
-  const filters=[];
-  if(S.yogaMode)filters.push('Yoga Mat Mode: exercises must fit within a yoga mat footprint only');
-  if(S.quietMode)filters.push('Quiet Apartment Mode: NO explosive or jumping moves — use slow eccentrics, isometric holds, and tempo work only');
+const filters=[];
+  if(S.yogaMode) filters.push('SPACE CONSTRAINT (Yoga Mat Mode): Exercises must require ZERO horizontal travel. You must fit entirely on a 2x6 foot mat. (Note: Vertical explosive jumps ARE allowed here as long as the user lands in the same spot).');
+  if(S.quietMode) filters.push('NOISE CONSTRAINT (Quiet Apartment Mode): ABSOLUTELY NO jumping, explosive moves, or impact. Use slow eccentrics, holds, and tempo work only.');
+
   const prompt=`Create a calisthenics workout for a ${S.level} level person. Mastered: ${S.masteredSkills.join(', ')||'none'}.
-${filters.length?'Filters: '+filters.join('. '):''}
+${filters.length ? 'CRITICAL RULES: ' + filters.join(' ') : ''}
 Return ONLY raw JSON: {"title":"Name","tagline":"Tagline","exercises":[{"name":"Name","sets":3,"reps":"12 reps","muscles":"Muscles","quiet":false,"tip":"Form tip"}]}
-Include 5-6 exercises. quiet=true for silent/no-impact moves.`;
+Include 5-6 exercises. Set "quiet": true only if the move is inherently silent. Do NOT force the whole workout to be quiet unless the NOISE CONSTRAINT is active!`;
   try{
     // We are now calling YOUR secure Vercel API route, not Anthropic directly
     const res = await fetch('/api/generate', {
